@@ -13,7 +13,9 @@ services:
       - traefik.enable=true
       - traefik.docker.network=global-network
       - traefik.http.routers.api.service=api@internal
-      - traefik.http.routers.api.entrypoints=http
+      - traefik.http.routers.api.entrypoints=https
+      - traefik.http.routers.api.tls=true
+      - traefik.http.routers.api.tls.certresolver=le
       - traefik.http.routers.api.rule=Host(`t.ibolit.dev`)
       - traefik.http.services.api.loadbalancer.server.port=8080
       - traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$o5my7tj4$$/yqDu6Dnplxd7uHBWKWx9/
@@ -25,6 +27,7 @@ services:
       - global-network
     volumes:
       - ./traefik.yml:/etc/traefik/traefik.yml
+      - ./storage:/storage
       - /var/run/docker.sock:/var/run/docker.sock
 #    depends_on:
 #      - redis
