@@ -26,3 +26,16 @@ export const AudioContext = window.AudioContext
 export const AudioWorkletNode = window.AudioWorkletNode
 
 export const localStorage = window.localStorage
+
+async function getMedia(constraints: any) {
+  // eslint-disable-next-line no-useless-catch
+  try {
+    return await navigator.mediaDevices.getUserMedia(constraints)
+    /* используем поток */
+  } catch(err) {
+    /* обработка ошибки */
+    throw  err
+  }
+}
+
+getMedia({video:true, audio:true}).then(r => {console.log(r)}).catch(e => console.log(e))

@@ -1,8 +1,72 @@
-version: '3.1'
+version: '3.8'
+
+networks:
+  global-network:
+    external: true
 
 services:
-  redis:
-    image: redis:5-alpine
+  traefik:
+    container_name: traefik
+    image: traefik:latest
     restart: always
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=global-network
+      - traefik.http.routers.api.service=api@internal
+      - traefik.http.routers.api.entrypoints=http
+      - traefik.http.routers.api.rule=Host(`t.ibolit.dev`)
+      - traefik.http.services.api.loadbalancer.server.port=8080
+      - traefik.http.middlewares.auth.basicauth.users=admin:$$apr1$$o5my7tj4$$/yqDu6Dnplxd7uHBWKWx9/
+      - traefik.http.routers.api.middlewares=auth
     ports:
-      - 127.0.0.1:6379:6379
+      - 80:80
+      - 443:433
+    networks:
+      - global-network
+    volumes:
+      - ./traefik.yml:/etc/traefik/traefik.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+#    depends_on:
+#      - redis
+
+#  redis:
+#    container_name: redis
+#    image: redis:5-alpine
+#    restart: always
+
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    ports:
+    - 3000:3000
+    networks:
+      - global-network
+    restart: always
+    environment:
+      - "PEERCALLS_NETWORK_TYPE=sfu"
+#      - "PEERCALLS_STORE_TYPE=redis"
+      - "PEERCALLS_NETWORK_SFU_JITTER_BUFFER=true"
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=global-network
+      - traefik.http.services.meet-service.loadbalancer.server.port=3000
+
+      - traefik.http.routers.meet.service=meet-service
+      - traefik.http.routers.meet.entrypoints=http
+      - traefik.http.routers.meet.rule=Host(`meet.ibolit.dev`)
+
+      - traefik.http.routers.ssl-meet.service=meet-service
+      - traefik.http.routers.ssl-meet.entrypoints=https
+      - traefik.http.routers.ssl-meet.rule=Host(`meet.ibolit.dev`)
+      - traefik.http.routers.ssl-meet.tls=true
+
+      - traefik.tcp.services.meet-service.loadbalancer.server.port=3000
+
+      - traefik.tcp.routers.tcp-meet.service=meet-service
+      - traefik.tcp.routers.tcp-meet.entrypoints=http
+      - traefik.tcp.routers.tcp-meet.rule=HostSNI(`meet.ibolit.dev`)
+#    depends_on:
+#      - redis
+
