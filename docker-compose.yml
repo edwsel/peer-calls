@@ -22,7 +22,7 @@ services:
       - traefik.http.routers.api.middlewares=auth
     ports:
       - 80:80
-      - 443:433
+      - 443:443
     networks:
       - global-network
     volumes:
