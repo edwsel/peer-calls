@@ -58,14 +58,12 @@ services:
 
       - traefik.http.routers.meet.service=meet-service
       - traefik.http.routers.meet.entrypoints=http
-      - traefik.http.routers.meet.tls=true
-      - traefik.http.routers.meet.tls.certresolver=le
       - traefik.http.routers.meet.rule=Host(`meet.ibolit.dev`)
 
       - traefik.http.routers.ssl-meet.service=meet-service
       - traefik.http.routers.ssl-meet.entrypoints=https
-      - traefik.http.routers.ssl-meet.tls=true
-      - traefik.http.routers.ssl-meet.tls.certresolver=le
+      - traefik.http.routers.meet.tls=true
+      - traefik.http.routers.meet.tls.certresolver=le
       - traefik.http.routers.ssl-meet.rule=Host(`meet.ibolit.dev`)
       - traefik.http.routers.ssl-meet.tls=true
 
