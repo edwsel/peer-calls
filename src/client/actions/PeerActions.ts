@@ -171,6 +171,8 @@ export function createPeer (options: CreatePeerOptions) {
         enableInsertableStreams: true,
         forceEncodedVideoInsertableStreams: true,
         forceEncodedAudioInsertableStreams: true,
+        // Force SDP Plan B Semantics
+        sdpSemantics: 'plan-b'
       },
       channelName: constants.PEER_DATA_CHANNEL_NAME,
       // trickle: false,
